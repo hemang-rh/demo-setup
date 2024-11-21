@@ -2,37 +2,36 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: demo-setup
+  name: demo-setup-account
+  namespace: model-serving-demo
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: demo-setup-cluster-reader
+rules:
+- apiGroups: [""]
+  resources: ["secrets", "deployments"]
+  verbs: ["get", "list", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  name: demo-setup-reader
+roleRef:
+  kind: ClusterRole
   name: demo-setup-cluster-reader
-subjects:
-- kind: ServiceAccount
-  name: demo-setup
-  namespace: model-serving-demo
-roleRef:
-  kind: ClusterRole
-  name: cluster-reader
   apiGroup: rbac.authorization.k8s.io
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: demo-setup-edit
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: edit
 subjects:
   - kind: ServiceAccount
-    name: demo-setup
+    name: demo-setup-account
+    namespace: model-serving-demo
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: minio-pvc
+  namespace: model-serving-demo
 spec:
   accessModes:
     - ReadWriteOnce
@@ -45,6 +44,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: minio
+  namespace: model-serving-demo
 spec:
   replicas: 1
   selector:
@@ -129,6 +129,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: minio-service
+  namespace: model-serving-demo
 spec:
   ipFamilies:
     - IPv4
@@ -152,6 +153,7 @@ kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
   name: minio-api
+  namespace: model-serving-demo
 spec:
   to:
     kind: Service
@@ -168,6 +170,7 @@ kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
   name: minio-ui
+  namespace: model-serving-demo
 spec:
   to:
     kind: Service
@@ -190,6 +193,7 @@ metadata:
     app.kubernetes.io/part-of: minio
     component: minio
   name: create-buckets-minio
+  namespace: model-serving-demo
 spec:
   selector: {}
   template:
@@ -206,7 +210,29 @@ spec:
             - -ec
             - |-
               env | grep MINIO
-              print "Coming up !! Installing minio client"
+              pip install minio;
+              cat << 'EOF' | python3
+              from minio import Minio
+              import os
+              print('Creating minio buckets')
+              access_key = os.getenv('MINIO_ROOT_USER')
+              secret_key = os.getenv('MINIO_ROOT_PASSWORD')
+              print(f'Access key: {access_key}')
+              print(f'Secret key: {secret_key}')
+              client = Minio(
+                'minio-service:9000',
+                access_key=access_key,
+                secret_key=secret_key,
+                secure=False
+              )
+              bucket = 'models'
+              print(f'create bucket {bucket}')
+              if not client.bucket_exists(bucket):
+                client.make_bucket(bucket)
+                print(f'Bucket {bucket} created')
+              else:
+                print(f'Bucket {bucket} already exists')
+              EOF
           command:
             - /bin/bash
           envFrom:
@@ -219,6 +245,8 @@ spec:
         - args:
             - -ec
             - |-
+              echo -n 'Hello from init container'
+              oc get secret minio-secret
               echo -n 'Waiting for minio root user secret'
               while ! oc get secret minio-secret 2>/dev/null | grep -qF minio-secret; do
               echo -n .
@@ -226,11 +254,12 @@ spec:
               done; echo
 
               echo -n 'Waiting for minio deployment'
-              while ! oc get deployment minio 2>/dev/null | grep -qF minio; do
-                echo -n .
-                sleep 5
-              done; echo
-              oc wait --for=condition=available --timeout=60s deployment/minio
+              # oc get deployment minio
+              # while ! oc get deployment minio 2>/dev/null | grep -qF minio; do
+              #   echo -n .
+              #   sleep 5
+              # done; echo
+              # oc wait --for=condition=available --timeout=60s deployment/minio
               sleep 10
           command:
             - /bin/bash
@@ -238,5 +267,4 @@ spec:
           imagePullPolicy: IfNotPresent
           name: wait-for-minio
       restartPolicy: Never
-      serviceAccountName: demo-setup
----
+      serviceAccountName: demo-setup-account
