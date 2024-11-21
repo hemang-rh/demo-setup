@@ -1,0 +1,50 @@
+- name: Cluster setup playbook
+  hosts: localhost
+  tasks:
+    - name: Configure Banner
+      kubernetes.core.k8s:
+        definition: "{{ lookup('kubernetes.core.kustomize', dir='components/branding') }}"
+      register: banner
+
+    # - name: Configure ConsoleLink
+    #   kubernetes.core.k8s:
+    #     definition: "{{ lookup('kubernetes.core.kustomize', dir='components/console-link') }}"
+
+    # - name: Install ArgoCD
+    #   kubernetes.core.k8s:
+    #     definition: "{{ lookup('kubernetes.core.kustomize', dir='components/argocd') }}"
+
+    # - name: Install NFD Operator
+    #   kubernetes.core.k8s:
+    #     definition: "{{ lookup('kubernetes.core.kustomize', dir='components/nfd-operator') }}"
+
+    # - name: Install NVIDIA GPU Operator
+    #   kubernetes.core.k8s:
+    #     definition: "{{ lookup('kubernetes.core.kustomize', dir='components/nvidia-gpu-operator') }}"
+
+    # - name: Create GPU Machineset
+    #   kubernetes.core.k8s:
+    #     definition: "{{ lookup('kubernetes.core.kustomize', dir='components/gpu-machineset') }}"
+
+    # - name: Run Nvidia GPU Sample App
+    #   kubernetes.core.k8s:
+    #     definition: "{{ lookup('kubernetes.core.kustomize', dir='components/gpu-sample-app') }}"
+
+    # - name: Install NVIDIA GPU Dashboard
+    #   kubernetes.core.k8s:
+    #     definition: "{{ lookup('kubernetes.core.kustomize', dir='components/nvidia-gpu-dashboard') }}"
+
+    # - name: Configure GPU Time Slicing
+    #   kubernetes.core.k8s:
+    #     definition: "{{ lookup('kubernetes.core.kustomize', dir='components/gpu-time-slicing') }}"
+
+    # - name: Install Serverless Operator
+    #   kubernetes.core.k8s:
+    #     definition: "{{ lookup('kubernetes.core.kustomize', dir='components/serverless-operator') }}"
+
+    # - name: Install ServiceMesh Operator
+    #   kubernetes.core.k8s:
+    #     definition: "{{ lookup('kubernetes.core.kustomize', dir='components/servicemesh-operator') }}"
+
+    - name: Install RHOAI operator
+      ansible.builtin.command: oc apply -k components/rhoai-operator
