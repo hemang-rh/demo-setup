@@ -11,8 +11,11 @@ metadata:
   name: demo-setup-cluster-reader
 rules:
 - apiGroups: [""]
-  resources: ["secrets", "deployments"]
-  verbs: ["get", "list", "watch"]
+  resources: ["secrets"]
+  verbs: ["get", "list"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -246,20 +249,18 @@ spec:
             - -ec
             - |-
               echo -n 'Hello from init container'
-              oc get secret minio-secret
               echo -n 'Waiting for minio root user secret'
-              while ! oc get secret minio-secret 2>/dev/null | grep -qF minio-secret; do
+              while ! oc get secret minio-secret 2>/dev/null ; do
               echo -n .
               sleep 5
               done; echo
 
               echo -n 'Waiting for minio deployment'
-              # oc get deployment minio
-              # while ! oc get deployment minio 2>/dev/null | grep -qF minio; do
-              #   echo -n .
-              #   sleep 5
-              # done; echo
-              # oc wait --for=condition=available --timeout=60s deployment/minio
+              while ! oc get deployment minio 2>/dev/null ; do
+                echo -n .
+                sleep 5
+              done; echo
+              oc wait --for=condition=available --timeout=60s deployment/minio
               sleep 10
           command:
             - /bin/bash
