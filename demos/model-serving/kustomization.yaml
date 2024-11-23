@@ -4,4 +4,16 @@ kind: Kustomization
 resources:
   - model-serving-demo-ns.yaml
   - minio-secret.yaml
-  - setup-minio.yaml
+  - service-account.yaml
+  - pvc.yaml
+  - minio-deployment.yaml
+  - minio-service.yaml
+  - minio-routes.yaml
+  - setup-minio-job.yaml
+
+configMapGenerator:
+  - name: minio-config
+    namespace: model-serving-demo
+    files:
+      - minio-tools.py
+      - job.sh
