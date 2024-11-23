@@ -9,17 +9,14 @@ MODEL_URL_1="https://github.com/RedHatTraining/AI26X-apps/raw/main/deploying/rho
 MODEL_NAME_1="rf_iris.onnx"
 
 echo "Downloading model from ${MODEL_NAME}"
-curl -L ${MODLEL_URL} -o ${MODEL_NAME}
+curl -sL ${MODLEL_URL} -o ${MODEL_NAME}
 
 echo "Downloading model from ${MODEL_NAME_1}"
-curl -L ${MODEL_URL_1} -o ${MODEL_NAME_1}
+curl -sL ${MODEL_URL_1} -o ${MODEL_NAME_1}
 
 
-pip install minio
-pip install requests
-pip install boto3
+pip install minio requests boto3 --quiet
 
 python3 /app/minio-tools.py
 
-ls -lh /app
 ls -lh *.onnx

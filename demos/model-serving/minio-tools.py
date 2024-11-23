@@ -4,7 +4,7 @@ import os
 import requests
 import boto3
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 model_url = "https://raw.githubusercontent.com/opendatahub-io-contrib/ai-on-openshift/main/docs/odh-rhoai/img-triton/card.fraud.detection.onnx"
 model_name = "card.fraud.detection.onnx"
@@ -49,10 +49,10 @@ def create_bucket(bucket_name):
     try:
         s3.list_buckets()["Buckets"]
         s3.head_bucket(Bucket=bucket_name)
-        print(f'Bucket {bucket_name} already exists')
+        logging.info(f'Bucket {bucket_name} already exists')
     except s3.exceptions.ClientError:
         s3.create_bucket(Bucket=bucket_name)
-        print(f'Bucket {bucket_name} created')
+        logging.info(f'Bucket {bucket_name} created')
 
 
 def upload_file_to_bucket(file_name, bucket_name):

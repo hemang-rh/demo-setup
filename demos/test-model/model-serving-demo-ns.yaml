@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: model-serving-demo
-  annotations:
-    openshift.io/description: |
-      Model Serving Demo
-    openshift.io/display-name: Model-Serving-Demo
