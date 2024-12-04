@@ -96,10 +96,11 @@ help(){
   loginfo " -p, --prereqs   Install prerequisites"
   loginfo " -g, --gpu       Configure gpu support"
   loginfo " -r, --rhoai     Configure RHOAI"
+  loginfo " -d, --demo      Run a specific demo"
   return 0
 }
 
-while getopts "h:agprd" flag; do
+while getopts "h:agprd:" flag; do
   case $flag in
     h) help ;;
     a) all=1 ;;
@@ -107,7 +108,7 @@ while getopts "h:agprd" flag; do
     p) prereqs=1 ;;
     r) rhoai=1 ;;
     d) demo=$OPTARG ;;
-    \?) echo "Invalid option: -$OPTARG" >&1; exit 1 ;;
+    \?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
   esac
 done
 
@@ -149,10 +150,8 @@ configure-gpu() {
   retry oc apply -k "${GIT_ROOT}"/components/03-gpu-operators
 
   logbanner "Install GPU dashboard"
-  retry oc apply -k "${GIT_ROOT}"/components/04-gpu-dashboard
-
-  logbanner "Configure gpu sharing method - timeslicing"
-  retry oc apply -k "${GIT_ROOT}"/components/05-gpu-timeslicing
+  retry oc apply -k "${GIT_ROOT}
+"/components/05-gpu-timeslicing
 
   logbanner "Run sample gpu application"
   retry oc apply -k "${GIT_ROOT}"/components/06-gpu-app
@@ -245,6 +244,9 @@ setup(){
     install_prereqs
     configure-gpu
     configure-rhoai
+  elif [ "$demo" = "model-serving" ]; then
+    loginfo "Configuring model serving demo"
+    retry oc apply -k "${GIT_ROOT}"/demos/model-serving
   else
     loginfo "No valid option passed"
     help

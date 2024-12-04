@@ -19,14 +19,15 @@ all:
 	@echo "Setting up the cluster..."
 	./scripts/setup.sh -a
 
-.PHONY: model-serving-demo-setup model-serving-demo-teardown
+.PHONY: model-serving-demo
 
-model-serving-demo-setup:
+model-serving-demo:
 	@echo "Configuring the model serving demo..."
-	until oc apply -k demos/model-serving; do : ; done
+	# until oc apply -k demos/model-serving; do : ; done
+	./scripts/setup.sh -d model-serving
 
 
-model-serving-demo-teardown:
-	@echo "Tearing down the model serving demo..."
-	until oc delete -k demos/model-serving; do : ; done
+# model-serving-demo-teardown:
+# 	@echo "Tearing down the model serving demo..."
+# 	until oc delete -k demos/model-serving; do : ; done
 
