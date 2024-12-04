@@ -27,7 +27,7 @@ model-serving-demo:
 	./scripts/setup.sh -d model-serving
 
 
-# model-serving-demo-teardown:
-# 	@echo "Tearing down the model serving demo..."
-# 	until oc delete -k demos/model-serving; do : ; done
+model-serving-demo-teardown:
+	@echo "Tearing down the model serving demo..."
+	oc delete -k demos/model-serving
 

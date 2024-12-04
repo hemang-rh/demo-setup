@@ -6,12 +6,16 @@ import boto3
 
 logging.basicConfig(level=logging.INFO)
 
-model_url = "https://raw.githubusercontent.com/opendatahub-io-contrib/ai-on-openshift/main/docs/odh-rhoai/img-triton/card.fraud.detection.onnx"
-model_name = "card.fraud.detection.onnx"
+# model_url = "https://raw.githubusercontent.com/opendatahub-io-contrib/ai-on-openshift/main/docs/odh-rhoai/img-triton/card.fraud.detection.onnx"
+# model_name = "card.fraud.detection.onnx"
 
-model_url_1 = "https://github.com/RedHatTraining/AI26X-apps/raw/main/deploying/rhoaiserving-using/rf_iris.onnx"
-model_name_1 = "rf_iris.onnx"
+# model_url_1 = "https://github.com/RedHatTraining/AI26X-apps/raw/main/deploying/rhoaiserving-using/rf_iris.onnx"
+# model_name_1 = "rf_iris.onnx"
 
+
+MODEL_NAME_1="rf_iris.onnx"
+MODEL_NAME_2="diabetes-from-tensorflow-keras.onnx"
+MODEL_NAME_3="card.fraud.detection-1.onnx"
 
 aws_access_key_id = os.getenv("MINIO_ROOT_USER")
 aws_secret_access_key = os.getenv("MINIO_ROOT_PASSWORD")
@@ -70,4 +74,6 @@ if __name__ == '__main__':
     # download_file_from_github(model_url, model_name)
     # download_file_from_github(model_url_1, model_name_1)
     create_bucket(bucket_name)
-    upload_file_to_bucket(model_name, bucket_name)
+    upload_file_to_bucket(MODEL_NAME_1, bucket_name)
+    upload_file_to_bucket(MODEL_NAME_2, bucket_name)
+    upload_file_to_bucket(MODEL_NAME_3, bucket_name)
