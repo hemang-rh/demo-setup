@@ -17,6 +17,12 @@ rules:
   verbs:
   - '*'
 - apiGroups:
+  - machine.openshift.io
+  resources:
+  - machines
+  verbs:
+  - '*'
+- apiGroups:
   - autoscaling.openshift.io
   resources:
   - machineautoscalers
@@ -68,6 +74,8 @@ spec:
           env:
             - name: INSTANCE_TYPE
               value: "g4dn.4xlarge"
+            - name: AWS_REGION
+              value: "us-east-1"
             - name: NAMESPACE
               valueFrom:
                 fieldRef:

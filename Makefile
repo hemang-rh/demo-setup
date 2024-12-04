@@ -1,19 +1,23 @@
 BASE:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 SHELL=/bin/sh
 
-.PHONY: setup-cluster
+.PHONY: prereqs gpu rhoai all
 
-setup-cluster:
-	@echo "Configuring the cluster..."
-	until oc apply -k components/00-branding; do : ; done
-	until oc apply -k components/01-console-link; do : ; done
-	until oc apply -k components/02-argocd; do : ; done
-	until oc apply -k components/03-configure-gpu; do : ; done
-	until oc apply -k components/04-authorino-operator; do : ; done
-	until oc apply -k components/05-serverless-operator; do : ; done
-	until oc apply -k components/06-servicemesh-operator; do : ; done
-	until oc apply -k components/07-rhoai-operator; do : ; done
-	until oc apply -k components/09-serving-runtime; do : ; done
+prereqs:
+	@echo "Configuring cluster prereqs..."
+	./scripts/setup.sh -p
+
+gpu:
+	@echo "Configuring the GPU..."
+	./scripts/setup.sh -g
+
+rhoai:
+	@echo "Configuring RHOAI..."
+	./scripts/setup.sh -r
+
+all:
+	@echo "Setting up the cluster..."
+	./scripts/setup.sh -a
 
 .PHONY: model-serving-demo-setup model-serving-demo-teardown
 
@@ -21,6 +25,8 @@ model-serving-demo-setup:
 	@echo "Configuring the model serving demo..."
 	until oc apply -k demos/model-serving; do : ; done
 
+
 model-serving-demo-teardown:
 	@echo "Tearing down the model serving demo..."
 	until oc delete -k demos/model-serving; do : ; done
+
