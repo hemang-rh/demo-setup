@@ -4,9 +4,9 @@
     # instance_type: "{{ instance_type | default('m5.xlarge') }}"
     # region: "{{ region | default('us-west-2') }}"
     worker_type: "m6a.4xlarge"
-    worker_count: 2
+    worker_count: 1
     control_plane_type: "m6a.4xlarge"
-    control_plane_count: 2
+    control_plane_count: 1
     region: "us-west-2"
     cluster_name: "demo-cluster"
     base_domain: "{{ lookup('env', 'BASE_DOMAIN') }}"
@@ -29,10 +29,10 @@
         aws configure set region {{ region }}
       when: aws_configure is succeeded
 
-    # - name: Create install-config.yaml
-    #   template:
-    #     src: install-config.yaml.j2
-    #     dest: /tmp/install-config.yaml
+    - name: Create install-config.yaml
+      template:
+        src: install-config.yaml.j2
+        dest: /tmp/install-config.yaml
 
     - name: Create OpenShift cluster
       command: >
@@ -40,8 +40,12 @@
         --dir=/tmp --log-level=info
       environment:
         KUBECONFIG: /tmp/auth/kubeconfig
+      register: create_cluster
 
-    # - name: Clean up install-config.yaml
-    #   file:
-    #     path: /tmp/install-config.yaml
-    #     state: absent
+    - debug:
+      var: create_cluster.stdout_lines
+
+    - name: Clean up install-config.yaml
+      file:
+        path: /tmp/install-config.yaml
+        state: absent
