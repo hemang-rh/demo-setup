@@ -1,0 +1,10 @@
+- name: Print environment variables
+  hosts: localhost
+  tasks:
+    - name: Print environment variables
+      debug:
+        var: lookup('env', item)
+      with_items:
+        - HOME
+        - USER
+        - PATH

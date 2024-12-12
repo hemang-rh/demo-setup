@@ -1,0 +1,21 @@
+apiVersion: v1
+baseDomain: {{ base_domain }}
+metadata:
+  name: {{ cluster_name }}
+platform:
+  aws:
+    region: {{ region }}
+compute:
+- name: worker
+  platform:
+    aws:
+      type: {{ instance_type }}
+  replicas: 3
+controlPlane:
+  name: master
+  platform:
+    aws:
+      type: {{ instance_type }}
+  replicas: 3
+pullSecret: '{{ pull_secret }}'
+sshKey: '{{ ssh_key }}'

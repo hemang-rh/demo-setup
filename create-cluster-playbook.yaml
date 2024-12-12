@@ -1,0 +1,47 @@
+- name: Provision OpenShift Cluster on AWS
+  hosts: localhost
+  vars:
+    # instance_type: "{{ instance_type | default('m5.xlarge') }}"
+    # region: "{{ region | default('us-west-2') }}"
+    worker_type: "m6a.4xlarge"
+    worker_count: 2
+    control_plane_type: "m6a.4xlarge"
+    control_plane_count: 2
+    region: "us-west-2"
+    cluster_name: "demo-cluster"
+    base_domain: "{{ lookup('env', 'BASE_DOMAIN') }}"
+    pull_secret: "{{ lookup('file', '/home/hemang/Downloads/pull-secret.json') }}"
+    ssh_key: "{{ lookup('file', '/home/hemang/.ssh/id_ed25519.pub') }}"
+    aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+    aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+
+  tasks:
+    - name: Configure AWS CLI
+      command: >
+        aws configure set aws_access_key_id {{ aws_access_key }}
+      environment:
+        AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+        AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+      register: aws_configure
+
+    - name: Configure AWS CLI region
+      command: >
+        aws configure set region {{ region }}
+      when: aws_configure is succeeded
+
+    # - name: Create install-config.yaml
+    #   template:
+    #     src: install-config.yaml.j2
+    #     dest: /tmp/install-config.yaml
+
+    - name: Create OpenShift cluster
+      command: >
+        openshift-install create cluster
+        --dir=/tmp --log-level=info
+      environment:
+        KUBECONFIG: /tmp/auth/kubeconfig
+
+    # - name: Clean up install-config.yaml
+    #   file:
+    #     path: /tmp/install-config.yaml
+    #     state: absent
