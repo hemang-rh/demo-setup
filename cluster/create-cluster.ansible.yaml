@@ -7,10 +7,10 @@
     worker_count: 1
     control_plane_type: "m6a.4xlarge"
     control_plane_count: 1
-    region: "us-west-2"
-    cluster_name: "demo-cluster"
+    region: "us-east-2"
+    cluster_name: "ocp1"
     base_domain: "{{ lookup('env', 'BASE_DOMAIN') }}"
-    pull_secret: "{{ lookup('file', '/home/hemang/Downloads/pull-secret.json') }}"
+    pull_secret: "{{ lookup('file', '/home/hemang/Downloads/pull-secret.json')|string }}"
     ssh_key: "{{ lookup('file', '/home/hemang/.ssh/id_ed25519.pub') }}"
     aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
     aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
@@ -29,23 +29,29 @@
         aws configure set region {{ region }}
       when: aws_configure is succeeded
 
+    - name: Create directory for cluster
+      file:
+        path: "/tmp/{{ cluster_name }}"
+        state: directory
+
     - name: Create install-config.yaml
       template:
-        src: install-config.yaml.j2
-        dest: /tmp/install-config.yaml
+        src: install-config.yaml.j2`
+        dest: /tmp/{{ cluster_name }}/install-config.yaml
 
     - name: Create OpenShift cluster
       command: >
         openshift-install create cluster
-        --dir=/tmp --log-level=info
+        --dir=/tmp/{{ cluster_name }} --log-level=info
       environment:
-        KUBECONFIG: /tmp/auth/kubeconfig
+        KUBECONFIG: /tmp/auth/{{ cluster_name }}/kubeconfig
       register: create_cluster
 
-    - debug:
-      var: create_cluster.stdout_lines
+    - name: Print create_cluster output
+      debug:
+        var: create_cluster.stdout_lines
 
-    - name: Clean up install-config.yaml
-      file:
-        path: /tmp/install-config.yaml
-        state: absent
+    # - name: Clean up install-config.yaml
+    #   file:
+    #     path: /tmp/install-config.yaml
+    #     state: absent

@@ -75,7 +75,8 @@ validate_cluster(){
 
 add_admin_user(){
   DEFAULT_USER="admin"
-  DEFAULT_PASS=$(genpass)
+  #DEFAULT_PASS=$(genpass)
+  DEFAULT_PASS="admin"
 
   HT_USERNAME=${1:-${DEFAULT_USER}}
   HT_PASSWORD=${2:-${DEFAULT_PASS}}
@@ -141,17 +142,16 @@ install_prereqs(){
 }
 
 configure-gpu() {
+  logbanner "Install GPU operators"
+  retry oc apply -k "${GIT_ROOT}"/components/03-gpu-operators
+
   logbanner "Add GPU node"
   retry oc apply -k "${GIT_ROOT}"/components/02-gpu-node
   sleep 60
   ocp_scale_machineset
 
-  logbanner "Install GPU operators"
-  retry oc apply -k "${GIT_ROOT}"/components/03-gpu-operators
-
   logbanner "Install GPU dashboard"
-  retry oc apply -k "${GIT_ROOT}
-"/components/05-gpu-timeslicing
+  retry oc apply -k "${GIT_ROOT}"/components/05-gpu-timeslicing
 
   logbanner "Run sample gpu application"
   retry oc apply -k "${GIT_ROOT}"/components/06-gpu-app

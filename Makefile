@@ -1,7 +1,7 @@
 BASE:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 SHELL=/bin/sh
 
-.PHONY: prereqs gpu rhoai all
+.PHONY: prereqs gpu rhoai fullsetup
 
 prereqs:
 	@echo "Configuring cluster prereqs..."
@@ -15,7 +15,7 @@ rhoai:
 	@echo "Configuring RHOAI..."
 	./scripts/setup.sh -r
 
-all:
+fullsetup:
 	@echo "Setting up the cluster..."
 	./scripts/setup.sh -a
 
