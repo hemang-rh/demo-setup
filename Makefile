@@ -21,7 +21,7 @@ fullsetup:
 
 .PHONY: model-serving-demo
 
-model-serving-demo:
+model-serving-demo-setup:
 	@echo "Configuring the model serving demo..."
 	# until oc apply -k demos/model-serving; do : ; done
 	./scripts/setup.sh -d model-serving

@@ -24,4 +24,4 @@ patches:
         path: /spec/template/spec/containers/0/env/0
         value:
           name: INSTANCE_TYPE
-          value: g5.2xlarge
+          value: g4dn.4xlarge

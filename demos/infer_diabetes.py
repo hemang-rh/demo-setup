@@ -9,6 +9,23 @@ TOKEN = "Token"
 headers = {
     "Authorization": f"Bearer {TOKEN}"
 }
+
+def rest_request(data):
+    json_data = {
+        "inputs": [
+            {
+                "name": "dense_input",
+                "shape": [2, 8],
+                "datatype": "FP32",
+                "data": data
+            }
+        ]
+    }
+
+    response = requests.post(MODEL_PATH, json=json_data)
+    response_dict = response.json()
+    return response_dict['outputs'][0]['data']
+
 payload = {
     "inputs": [
         {
@@ -31,4 +48,4 @@ if (response.status_code == 200):
     response_dict = response.json()
     print(response_dict['outputs'][0]['data'])
 else:
-    print("Error making request:", response.status_code, response.content)
+    print("Error making request:", response.status_code, response.status_code)
