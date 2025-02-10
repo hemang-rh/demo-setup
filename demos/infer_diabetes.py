@@ -1,30 +1,14 @@
-# MODEL_PATH = "https://iris-model-demo-multimodel.apps.cluster-9csp7.9csp7.sandbox3279.opentlc.com/v2/models/iris-model/infer"
-# TOKEN = "Token"
-
 import requests
+import dotenv
+import os
 
-MODEL_PATH = "Serving URL"
-TOKEN = "Token"
+dotenv.load_dotenv()
+MODEL_URL = os.getenv('MODEL_URL')
+TOKEN = os.getenv('TOKEN')
 
 headers = {
     "Authorization": f"Bearer {TOKEN}"
 }
-
-def rest_request(data):
-    json_data = {
-        "inputs": [
-            {
-                "name": "dense_input",
-                "shape": [2, 8],
-                "datatype": "FP32",
-                "data": data
-            }
-        ]
-    }
-
-    response = requests.post(MODEL_PATH, json=json_data)
-    response_dict = response.json()
-    return response_dict['outputs'][0]['data']
 
 payload = {
     "inputs": [
@@ -39,13 +23,13 @@ payload = {
 }
 
 response = requests.post(
-    MODEL_PATH, json=payload, headers=headers, verify=False
+    MODEL_URL, json=payload, headers=headers, verify=False
 )
 
-# either pretty-print results or print error
 if (response.status_code == 200):
     outputs = response.json()
     response_dict = response.json()
+    print('\n***Output from the model***')
     print(response_dict['outputs'][0]['data'])
 else:
     print("Error making request:", response.status_code, response.status_code)
