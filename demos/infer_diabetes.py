@@ -6,6 +6,8 @@ dotenv.load_dotenv()
 MODEL_URL = os.getenv('MODEL_URL')
 TOKEN = os.getenv('TOKEN')
 
+print(f"Model url: {MODEL_URL}")
+
 headers = {
     "Authorization": f"Bearer {TOKEN}"
 }
