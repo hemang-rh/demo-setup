@@ -151,6 +151,7 @@ configure-gpu() {
   ocp_scale_machineset
 
   logbanner "Install GPU dashboard"
+  retry oc apply -k "${GIT_ROOT}"/components/04-gpu-dashboard
   retry oc apply -k "${GIT_ROOT}"/components/05-gpu-timeslicing
 
   logbanner "Run sample gpu application"

@@ -6,9 +6,9 @@
     worker_type: "m6a.4xlarge"
     worker_count: 1
     control_plane_type: "m6a.4xlarge"
-    control_plane_count: 1
+    control_plane_count: 3
     region: "us-east-2"
-    cluster_name: "ocp1"
+    cluster_name: "cluster-1"
     base_domain: "{{ lookup('env', 'BASE_DOMAIN') }}"
     pull_secret: "{{ lookup('file', '/home/hemang/Downloads/pull-secret.json')|string }}"
     ssh_key: "{{ lookup('file', '/home/hemang/.ssh/id_ed25519.pub') }}"
@@ -36,8 +36,13 @@
 
     - name: Create install-config.yaml
       template:
-        src: install-config.yaml.j2`
+        src: install-config.yaml.j2
         dest: /tmp/{{ cluster_name }}/install-config.yaml
+
+    - name: Make a copy of install-config.yaml
+      copy:
+        src: /tmp/{{ cluster_name }}/install-config.yaml
+        dest: /tmp/{{ cluster_name }}/install-config-backup.yaml
 
     - name: Create OpenShift cluster
       command: >
@@ -47,8 +52,7 @@
         KUBECONFIG: /tmp/auth/{{ cluster_name }}/kubeconfig
       register: create_cluster
 
-    - name: Print create_cluster output
-      debug:
+    - debug:
         var: create_cluster.stdout_lines
 
     # - name: Clean up install-config.yaml
