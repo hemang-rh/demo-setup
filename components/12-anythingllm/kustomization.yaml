@@ -2,5 +2,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - anythingllm-connection-type-configmap.yaml
-  - workbench-imagestream-anythingllm.yaml
+  - anythingllm-connection.yaml
+  - workbench-anythingllm.yaml
