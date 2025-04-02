@@ -174,6 +174,9 @@ configure-rhoai() {
 
   logbanner "Configure serving runtime"
   retry oc apply -k "${GIT_ROOT}"/components/11-serving-runtime
+
+  logbanner "Configure AnythingLLM"
+  retry oc apply -k "${GIT_ROOT}"/components/12-anythingllm
 }
 
 workshop_uninstall(){

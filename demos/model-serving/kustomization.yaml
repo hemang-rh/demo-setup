@@ -10,6 +10,8 @@ resources:
   - minio-service.yaml
   - minio-routes.yaml
   - setup-minio-job.yaml
+  - demo-kserve.yaml
+  - demo-modelmesh.yaml
 
 configMapGenerator:
   - name: minio-config
